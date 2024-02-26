@@ -9,6 +9,13 @@ app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 app.use("/src/pdf", express.static("src/pdf"));
+const { sendOTP } = require('./twilio');
+
+const mobileNumber = '+919737009734'; // Replace with the recipient's mobile number
+const otp = "1234"; // Implement your OTP generation logic here
+
+
+
 //mongodb connection----------------------------------------------
 const mongoUrl =
   "mongodb+srv://user:user123@main.o78v5ur.mongodb.net/";
@@ -161,7 +168,16 @@ app.get('/get-pdf', (req, res) => {
 
 //apis----------------------------------------------------------------
 app.get("/", async (req, res) => {
-  res.send("Success!!!!!!");
+    sendOTP(mobileNumber, otp)
+    .then(success => {
+        if (success) {
+            console.log('OTP sent successfully!');
+            res.send("OTP sent successfully!");
+        } else {
+            console.log('Failed to send OTP.');
+            res.send("Failed!!!!!!");
+        }
+    });
 });
 
 function getAllPDFFiles(directory) {
